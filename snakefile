@@ -77,7 +77,7 @@ rule munge_sumstats:
     params:
         output_path = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}"
     conda:
-        "ldsc/environment copy.yml"
+        "ldsc/environment.yml"
     shell:
         "./ldsc/munge_sumstats.py --out {params.output_path} --sumstats {input} --N 361194.0 --a1 alt --a2 ref"
 
