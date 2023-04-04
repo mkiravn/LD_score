@@ -108,7 +108,7 @@ rule estimate_heritability:
         sumstats = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",
         ld = "data/UKBB.ALL.ldscore/UKBB.{spop}.l2.ldscore.gz"
     output:
-        "results/{pheno_code}.info{info}.chr{chrom}.log"
+        "results/{pheno_code}.{spop}.info{info}.chr{chrom}.log"
     params:
         ld_path = "data/UKBB.ALL.ldscore/UKBB.{spop}",
         output_path = "results/{pheno_code}.info{info}.chr{chrom}",
