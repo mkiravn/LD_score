@@ -1,5 +1,10 @@
 ##### A snakemake pipeline to run LD score regression
 
+#wildcard_constraints:
+#   pheno_code="^\d+(?:_[a-z]*)*$"
+
+
+
 rule all:
     input:
         expand("results/{pheno_code}.{spop}.info{info}.chr{chrom}.log",info=0,spop="EUR",chrom=1,pheno_code=[100890,3731,"50_raw"])
@@ -8,9 +13,9 @@ rule all:
 #This rule unzips raw bgz files
 rule unzip_bgz:
    input:
-       "data/GWAS_summaries/raw/{file,^(?!.*munged).*$}.tsv.bgz"
+       "data/GWAS_summaries/raw/{file}.tsv.bgz"
    output:
-       "data/GWAS_summaries/unzipped/{file,^(?!.*munged).*$}.tsv"
+       "data/GWAS_summaries/unzipped/{file}.tsv"
    shell:
        "gunzip -c {input} > {output}"
 
@@ -19,7 +24,7 @@ rule download_sumstats_files:
     Download phenotype files
     """
     output:
-        "data/GWAS_summaries/raw/{pheno_code,^[^.]*$}.gwas.imputed_v3.both_sexes.tsv.bgz"
+        "data/GWAS_summaries/raw/{pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz"
     shell:
        "wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz -O data/GWAS_summaries/raw/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz"
 
@@ -70,24 +75,30 @@ rule combine_sumstats:
         variants="data/GWAS_summaries/analysis/variants.info{info}.chr{chrom}.tsv",
         sumstats= "data/GWAS_summaries/unzipped/{pheno_code}.gwas.imputed_v3.both_sexes.tsv"
     output:
-        "data/GWAS_summaries/sumstats/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
+        combined="data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
     shell:
-        "Rscript scripts/combine_sumstats.R {input.variants} {input.sumstats} {output}"
+        "Rscript scripts/combine_sumstats.R {input.variants} {input.sumstats} {output.combined}"
 
 rule munge_sumstats:
     """
     Processing the summary statistics file into a format which ldsc likes
     """
     input:
-        "data/GWAS_summaries/sumstats/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
+        "data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
     output:
-        "data/GWAS_summaries/sumstats_munged/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
+        "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
     params:
         output_path = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}"
     conda:
         "ldsc/environment.yml"
-    shell:
-        "./ldsc/munge_sumstats.py --out {params.output_path} --sumstats {input} --N 361194.0 --a1 alt --a2 ref"
+    shell: # this is a *very* hacky way to get it to activate conda...
+        """
+        source activate ldsc && \
+        ./ldsc/munge_sumstats.py \
+        --out {params.output_path} \
+        --sumstats {input} \
+        --N 361194.0 --a1 alt --a2 ref
+        """
 
 # ./ldsc/munge_sumstats.py --out data/GWAS_summaries/sumstats/munged.100890.info0.chr1 --sumstats data/GWAS_summaries/sumstats/100890.info0.chr1.sumstats.tsv --N 361194.0 --a1 alt --a2 ref
 # worked on the command line???
