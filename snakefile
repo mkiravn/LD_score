@@ -1,5 +1,9 @@
 ##### A snakemake pipeline to run LD score regression
 
+rule all:
+    input:
+        expand("results/{pheno_code}.info{info}.chr{chrom}.log",info=0,chrom=1,pheno_code=[100890,3731,"50_raw"])
+
 
 #This rule unzips raw bgz files
 rule unzip_bgz:
@@ -19,6 +23,14 @@ rule download_sumstats_files:
     shell:
        "wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz -O data/GWAS_summaries/raw/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz"
 
+rule download_ldscore_files:
+    """
+    Download ld score files
+    """
+    output:
+        "data/UKBB.ALL.ldscore/UKBB.EUR.8LDMS.rsid.l2.ldscore.gz" # sub-optimal, should be all pops we want
+    shell:
+        "wget https://pan-ukb-us-east-1.s3.amazonaws.com/ld_release/UKBB.ALL.ldscore.tar.gz"
 
 rule download_variant_file:
     """
@@ -59,15 +71,56 @@ rule munge_sumstats:
     Processing the summary statistics file into a format which ldsc likes
     """
     input:
-         "data/GWAS_summaries/sumstats/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
+        "data/GWAS_summaries/sumstats/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
     output:
         "data/GWAS_summaries/sumstats_munged/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
     params:
-        output_path= "data/GWAS_summaries/sumstats_munged/{pheno_code}.info{info}.chr{chrom}"
+        output_path = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}"
+    conda:
+        "ldsc/environment copy.yml"
+    shell:
+        "./ldsc/munge_sumstats.py --out {params.output_path} --sumstats {input} --N 361194.0 --a1 alt --a2 ref"
+
+# ./ldsc/munge_sumstats.py --out data/GWAS_summaries/sumstats/munged.100890.info0.chr1 --sumstats data/GWAS_summaries/sumstats/100890.info0.chr1.sumstats.tsv --N 361194.0 --a1 alt --a2 ref
+# worked on the command line???
+
+rule cut_ld_scores:
+    """Format LD files into by cutting only the baseL2 column"""
+    input:
+        ld_score = "data/UKBB.ALL.ldscore/UKBB.{spop}.8LDMS.rsid.l2.ldscore.gz"
+    output:
+        "data/ld_score/cut.UKBB.{spop}.8LDMS.rsid.l2.ldscore"
+    params:
+         output_dir = "data/ld_score/"
+    shell:    
+        """
+        mkdir -p {output_dir} && \
+        gunzip -c {input} | \
+        cut -f 1-4 > {output}
+        """
+
+
+rule estimate_heritability:
+    """
+    Using LD score regression to estimate heritability
+    """
+    input:
+        sumstats = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",
+        ld = "data/UKBB.ALL.ldscore/UKBB.{spop}.l2.ldscore.gz"
+    output:
+        "results/{pheno_code}.info{info}.chr{chrom}.log"
+    params:
+        ld_path = "data/UKBB.ALL.ldscore/UKBB.{spop}",
+        output_path = "results/{pheno_code}.info{info}.chr{chrom}",
+        M = 7009236 # modify this
     conda:
         "ldsc/environment.yml"
     shell:
-        """./ldsc/munge_sumstats.py \
-                --out {params.output_path} \
-                --N 361194.0 \
-                --sumstats {input} """
+        """
+        ./ldsc/ldsc.py \
+        --h2 {input.sumstats} \
+        --ref-ld {params.ld_path} \
+        --w-ld {params.ld_path} \
+        --M {params.M} \
+        --out {params.output_path}
+        """
