@@ -2,15 +2,15 @@
 
 rule all:
     input:
-        expand("results/{pheno_code}.info{info}.chr{chrom}.log",info=0,chrom=1,pheno_code=[100890,3731,"50_raw"])
+        expand("results/{pheno_code}.{spop}.info{info}.chr{chrom}.log",info=0,spop="EUR",chrom=1,pheno_code=[100890,3731,"50_raw"])
 
 
 #This rule unzips raw bgz files
 rule unzip_bgz:
    input:
-       "data/GWAS_summaries/raw/{file}.tsv.bgz"
+       "data/GWAS_summaries/raw/{file,^(?!.*munged).*$}.tsv.bgz"
    output:
-       "data/GWAS_summaries/unzipped/{file}.tsv"
+       "data/GWAS_summaries/unzipped/{file,^(?!.*munged).*$}.tsv"
    shell:
        "gunzip -c {input} > {output}"
 
@@ -19,7 +19,7 @@ rule download_sumstats_files:
     Download phenotype files
     """
     output:
-        "data/GWAS_summaries/raw/{pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz"
+        "data/GWAS_summaries/raw/{pheno_code,^[^.]*$}.gwas.imputed_v3.both_sexes.tsv.bgz"
     shell:
        "wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz -O data/GWAS_summaries/raw/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz"
 
@@ -28,9 +28,17 @@ rule download_ldscore_files:
     Download ld score files
     """
     output:
-        "data/UKBB.ALL.ldscore/UKBB.EUR.8LDMS.rsid.l2.ldscore.gz" # sub-optimal, should be all pops we want
+        "data/UKBB.ALL.ldscore.tar.gz" # sub-optimal, should be all pops we want
     shell:
-        "wget https://pan-ukb-us-east-1.s3.amazonaws.com/ld_release/UKBB.ALL.ldscore.tar.gz"
+        "wget https://pan-ukb-us-east-1.s3.amazonaws.com/ld_release/UKBB.ALL.ldscore.tar.gz > {output}"
+
+rule unzip_ldscore_files:
+	input:
+		"data/UKBB.ALL.ldscore.tar.gz"
+	output: 
+		"data/UKBB.ALL.ldscore/UKBB.EUR.rsid.l2.ldscore.gz"
+	shell: 
+		"tar –xvzf {input}"
 
 rule download_variant_file:
     """
@@ -106,7 +114,7 @@ rule estimate_heritability:
     """
     input:
         sumstats = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",
-        ld = "data/UKBB.ALL.ldscore/UKBB.{spop}.l2.ldscore.gz"
+        ld = "data/UKBB.ALL.ldscore/UKBB.{spop}.rsid.l2.ldscore.gz"
     output:
         "results/{pheno_code}.{spop}.info{info}.chr{chrom}.log"
     params:
