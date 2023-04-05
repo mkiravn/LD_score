@@ -1,4 +1,5 @@
 ##### A snakemake pipeline to run LD score regression
+shell.prefix("export PATH=/usr/bin:/usr/local/bin:/path/to/required/command")
 
 #wildcard_constraints:
 #   pheno_code="^\d+(?:_[a-z]*)*$"
