@@ -56,7 +56,11 @@ rule download_variant_file:
     output:
         "data/GWAS_summaries/raw/variants.tsv.bgz"
     shell:
-       "wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/annotations/variants.tsv.bgz -O data/GWAS_summaries/raw/variants.tsv.bgz"
+       """
+       mkdir -p data/GWAS_summaries/raw/ && \
+       wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/annotations/variants.tsv.bgz -O \
+       data/GWAS_summaries/raw/variants.tsv.bgz
+       """
 
 
 rule filter_variants:
