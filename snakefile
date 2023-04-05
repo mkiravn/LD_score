@@ -1,5 +1,4 @@
 ##### A snakemake pipeline to run LD score regression
-shell.prefix("export PATH=/usr/bin:/usr/local/bin:/path/to/required/command")
 
 #wildcard_constraints:
 #   pheno_code="^\d+(?:_[a-z]*)*$"
@@ -29,7 +28,7 @@ rule download_sumstats_files:
     shell:
        """
        mkdir -p data/GWAS_summaries/raw/ && \
-       wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz \
+       /usr/bin/wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz \
        -O data/GWAS_summaries/raw/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz
        """
 
