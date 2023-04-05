@@ -90,15 +90,13 @@ rule munge_sumstats:
     params:
         output_path = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}"
     conda:
-        "ldsc/environment.yml"
+        "ldsc/environment copy.yml"
     shell: # this is a *very* hacky way to get it to activate conda...
         """
-        conda activate ldsc && \
         ./ldsc/munge_sumstats.py \
         --out {params.output_path} \
         --sumstats {input} \
-        --N 361194.0 --a1 alt --a2 ref &&  \
-        conda deactivate \
+        --N 361194.0 --a1 alt --a2 ref &&  
         """
 
 # ./ldsc/munge_sumstats.py --out data/GWAS_summaries/sumstats/munged.100890.info0.chr1 --sumstats data/GWAS_summaries/sumstats/100890.info0.chr1.sumstats.tsv --N 361194.0 --a1 alt --a2 ref
