@@ -3,11 +3,67 @@
 #wildcard_constraints:
 #   pheno_code="^\d+(?:_[a-z]*)*$"
 
+import pandas as pd
 
+# Read the TSV file into a pandas DataFrame
+df = pd.read_csv("data/simons_phenotypes.tsv", sep="\t")
+
+# Extract the values of the "code" column into a list
+code_list = df["code"].tolist()[:3]
+# note to self - deal with N (in phenotype file, currently ignored)
 
 rule all:
+    """will return the input files needed for ldsc"""
     input:
-        expand("results/{pheno_code}.{spop}.info{info}.chr{chrom}.log",info=0,spop="EUR",chrom=1,pheno_code=[100890,3731,"50_raw"])
+        expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",info=0,chrom=1,pheno_code=code_list),
+        expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv",info=0,chrom=1,pheno_code=code_list)
+
+
+rule download_sds:
+    output:
+        "data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab.gz"
+    shell:
+        "wget https://datadryad.org/stash/downloads/file_stream/10751 -O data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab.gz"
+
+rule unzip_sds:
+    input:
+        "data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab.gz"
+    output:
+        "data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab"
+    shell:
+        "gunzip -c {input} > {output}"
+
+rule download_bscores:
+    output:
+        "data/bscores/CADD_bestfit.tar.gz"
+    shell:
+        "wget https://github.com/sellalab/HumanLinkedSelectionMaps/raw/master/Bmaps/CADD_bestfit.tar.gz -O data/bscores/CADD_bestfit.tar.gz"
+
+rule download_phenotype_table:
+    """downloads table of phenotypes from Simons et al. 2023, 
+    https://www.biorxiv.org/content/10.1101/2022.10.04.509926v1.supplementary-material"""
+    output:
+        "data/simons_phenotypes.csv"
+    shell:
+        "wget https://www.biorxiv.org/content/biorxiv/early/2022/10/07/2022.10.04.509926/DC2/embed/media-2.csv?download=true -O data/simons_phenotypes.csv"
+
+rule process_phenotype_table:
+    input:
+       "data/simons_phenotypes.csv" 
+    output:
+       "data/simons_phenotypes.tsv" 
+    shell:
+        "Rscript scripts/get_phenotypes.R {input} {output}"
+
+# rule unzip_bscores:
+#     input:
+#         "data/bscores/CADD_bestfit.tar.gz"
+# 	output: 
+#         "data/bscores/CADD_bestfit/ch1.bmap.txt"
+#     params:
+#         path="data/bscores/CADD_bestfit"
+# 	shell: 
+#         "tar -xzf {input} -O {params.path}"
 
 
 #This rule unzips raw bgz files
@@ -28,7 +84,7 @@ rule download_sumstats_files:
     shell:
        """
        mkdir -p data/GWAS_summaries/raw/ && \
-       /usr/bin/wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz \
+       wget https://broad-ukb-sumstats-us-east-1.s3.amazonaws.com/round2/additive-tsvs/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz \
        -O data/GWAS_summaries/raw/{wildcards.pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz
        """
 
@@ -87,6 +143,39 @@ rule combine_sumstats:
     shell:
         "Rscript scripts/combine_sumstats.R {input.variants} {input.sumstats} {output.combined}"
 
+# needs an R script
+rule polarise_sds:
+    """polarises and munges sds"""
+    input:
+        sds="data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab",
+        sumstats="data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",
+    output:
+        polarised_sds="data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv"
+    shell:
+        """
+        Rscript scripts/polarise_SDS.R {input.sds} {input.sumstats} {output} 
+        """ 
+
+
+# ./ldsc/munge_sumstats.py --out data/GWAS_summaries/sumstats/munged.100890.info0.chr1 --sumstats data/GWAS_summaries/sumstats/100890.info0.chr1.sumstats.tsv --N 361194.0 --a1 alt --a2 ref
+# worked on the command line???
+
+rule cut_ld_scores:
+    """Format LD files into by cutting only the baseL2 column"""
+    input:
+        ld_score = "data/UKBB.ALL.ldscore/UKBB.{spop}.8LDMS.rsid.l2.ldscore.gz"
+    output:
+        "data/ld_score/cut.UKBB.{spop}.8LDMS.rsid.l2.ldscore"
+    params:
+         output_dir = "data/ld_score/"
+    shell:    
+        """
+        mkdir -p {output_dir} && \
+        gunzip -c {input} | \
+        cut -f 1-4 > {output}
+        """
+
+# works up to here...
 rule munge_sumstats:
     """
     Processing the summary statistics file into a format which ldsc likes
@@ -107,28 +196,10 @@ rule munge_sumstats:
         --N 361194.0 --a1 alt --a2 ref &&  
         """
 
-# ./ldsc/munge_sumstats.py --out data/GWAS_summaries/sumstats/munged.100890.info0.chr1 --sumstats data/GWAS_summaries/sumstats/100890.info0.chr1.sumstats.tsv --N 361194.0 --a1 alt --a2 ref
-# worked on the command line???
-
-rule cut_ld_scores:
-    """Format LD files into by cutting only the baseL2 column"""
-    input:
-        ld_score = "data/UKBB.ALL.ldscore/UKBB.{spop}.8LDMS.rsid.l2.ldscore.gz"
-    output:
-        "data/ld_score/cut.UKBB.{spop}.8LDMS.rsid.l2.ldscore"
-    params:
-         output_dir = "data/ld_score/"
-    shell:    
-        """
-        mkdir -p {output_dir} && \
-        gunzip -c {input} | \
-        cut -f 1-4 > {output}
-        """
-
 
 rule estimate_heritability:
     """
-    Using LD score regression to estimate heritability
+    Using LD score regression to estimate heritability - currently does not work
     """
     input:
         sumstats = "data/GWAS_summaries/sumstats/munged.{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",
