@@ -22,6 +22,15 @@ chrom <- args[4]
 input_data <- fread(input_path, header=TRUE)
 print(paste("Read in input:",input_path))
 
-input_data <- input_data %>% filter(info>info_score,chr==chrom)
+# Filter by info score and chromosome if provided
+if (!chrom=="all") {
+    input_data <- input_data %>% filter(info > info_score, chr == chrom)
+    print(paste("Filtered by chromosome. Writing out file at:", output_path))
+} else {
+    input_data <- input_data %>% filter(info>info_score)
+    print(paste("Writing out file at:", output_path))
+}
+
+
 print(paste("Filtered. Writing out file at:",output_path))
 input_data %>% fwrite(sep="\t", file=output_path)

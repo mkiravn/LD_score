@@ -24,9 +24,13 @@ joined <- SDS %>%
   rename("chr"="CHR","pos"="POS","rsid"="ID") %>%
   inner_join(sumstats,by=c("chr","pos","rsid"))
 
+print(paste("Signs to be flipped due to AA/ref differing:",length(joined$AA==joined$ref)))
+
 joined <- joined %>%
   rowwise() %>%
-  mutate(tSDS=ifelse(AA==ref & DA==alt,SDS,-SDS)) %>%
+  mutate(tSDS = case_when( 
+    AA==ref & DA==alt ~ sign(beta) * SDS,
+    AA!=ref | DA!=alt ~ - sign(beta) * SDS)) %>% 
   ungroup() %>%
   mutate(N=3195.0) %>%
   select(chr,pos,SNP=rsid,A2=ref,A1=alt,Z=tSDS,N)

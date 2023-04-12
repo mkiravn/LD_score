@@ -13,6 +13,6 @@ a2="ref"
 ./ldsc/munge_sumstats.py \
 --out "${munged_file}" \
 --sumstats "${input_file}" \
---N "${N}" \
+--N-col "n_complete_samples" \
 --a1 "${a1}" \
 --a2 "${a2}"

@@ -22,7 +22,7 @@ output_path <- args[3]
 print(paste("Processing. Will output to:",output_path))
 left_join(variants,sumstats,by="variant") %>%
     mutate(a1=alt,a2=ref) %>%
-    select(ref,alt,rsid,chr,pos,beta,pval,n_called) %>%
+    select(ref,alt,rsid,chr,pos,beta,pval,n_complete_samples) %>%
     fwrite(sep="\t", file=output_path)
 
 
