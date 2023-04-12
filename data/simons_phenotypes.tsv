@@ -1,0 +1,96 @@
+Trait	code	N	h2
+Standing height	50_irnt	359564	0.764545707877872
+Mean platelet (thrombocyte) volume	30100_irnt	349605	0.370841254866423
+Sitting height	20015_irnt	359242.5	0.577456703100813
+Platelet count	30080_irnt	349943	0.342825354667939
+Mean corpuscular volume	30040_irnt	349753	0.277305525433794
+Mean corpuscular haemoglobin	30050_irnt	349516	0.255319797791441
+Platelet distribution width	30110_irnt	350137	0.267363729684455
+Platelet crit	30090_irnt	350111	0.313782885126157
+Trunk fat-free mass	23129_irnt	353851	0.486311570985117
+Trunk predicted mass	23130_irnt	353969.5	0.505340756703136
+Whole body fat-free mass	23101_irnt	354220	0.522405706649882
+Whole body water mass	23102_irnt	354367	0.498875918851966
+Alkaline phosphatase (quantile)	30610_irnt	343205	0.273148947443483
+Monocyte count	30130_irnt	349005.5	0.276259609296354
+Basal metabolic rate	23105_irnt	354243	0.54968733710505
+Red blood cell (erythrocyte) distribution width	30070_irnt	350152	0.221950456170123
+Eosinophill percentage	30210_irnt	349435	0.262822989920532
+Mean reticulocyte volume	30260_irnt	344366	0.236935731788256
+Red blood cell (erythrocyte) count	30010_irnt	349590	0.295370107331143
+Mean sphered cell volume	30270_irnt	344345	0.233454201974929
+Leg fat-free mass (right)	23113_irnt	354403	0.490836931185365
+Leg predicted mass (right)	23114_irnt	354274	0.487232793848599
+Monocyte percentage	30190_irnt	349163	0.224395472456952
+Glycated haemoglobin (quantile)	30750_irnt	343858	0.234059244959982
+IGF-1 (quantile)	30770_irnt	342000.5	0.299611317477943
+Arm fat-free mass (right)	23121_irnt	354150	0.48779143874454
+Arm predicted mass (right)	23122_irnt	353934.5	0.467728527072806
+High light scatter reticulocyte percentage	30290_irnt	344397	0.214606780895104
+High light scatter reticulocyte count	30300_irnt	344340	0.212833257630352
+Lymphocyte count	30120_irnt	349236	0.264751591241017
+Reticulocyte percentage	30240_irnt	344275	0.197692721942208
+Reticulocyte count	30250_irnt	344178	0.191288208072601
+Impedance of whole body	23106_irnt	354243	0.562744818515076
+Weight	21002_irnt	359574	0.493682816947124
+White blood cell (leukocyte) count	30000_irnt	350086.5	0.270373022747792
+Gamma glutamyltransferase (quantile)	30730_irnt	343663	0.212247590945051
+Weight	23098_irnt	354362	0.531469867122974
+Creatinine (quantile)	30700_irnt	343822	0.286651814884304
+Heel quantitative ultrasound index (QUI), direct entry	3147_irnt	206372	0.3379211405507
+Heel bone mineral density (BMD) T-score, automated	78_irnt	206372	0.3379211405507
+Heel bone mineral density (BMD)	3148_irnt	206312	0.339367894064164
+Impedance of leg (left)	23108_irnt	354044	0.546876333425766
+Haemoglobin concentration	30020_irnt	349671.5	0.242797940938188
+SHBG (quantile)	30830_irnt	311293	0.265092062522528
+Triglycerides (quantile)	30870_irnt	343716.5	0.174774855842228
+Impedance of arm (left)	23110_irnt	354074.5	0.456903837315732
+Neutrophill count	30140_irnt	349428	0.229321156230007
+Heel Broadband ultrasound attenuation, direct entry	3144_irnt	206201	0.34264043894676
+Lymphocyte percentage	30180_irnt	349286	0.248655275791736
+Haematocrit percentage	30030_irnt	350047	0.226708347821086
+Body mass index (BMI)	21001_irnt	359376	0.648034547133427
+Body mass index (BMI)	23104_irnt	354045.5	0.678396218576109
+Immature reticulocyte fraction	30280_irnt	344289	0.151534659448923
+Trunk fat mass	23128_irnt	353995	0.560498925297444
+Whole body fat mass	23100_irnt	353590	0.514261161719799
+Forced vital capacity (FVC)	3062_irnt	329107	0.394245423021671
+Total protein (quantile)	30860_irnt	314388	0.240212334260388
+Neutrophill percentage	30200_irnt	349246.5	0.248007930675986
+Hip circumference	49_irnt	360108	0.42001434936035
+Arm fat mass (left)	23124_irnt	353985	0.601596683836127
+Leg fat mass (left)	23116_irnt	354105.5	0.595466920074312
+Ankle spacing width	3143_irnt	206354	0.408748431143677
+Forced vital capacity (FVC), Best measure	20151_irnt	272195	0.497847659189156
+Body fat percentage	23099_irnt	354174.5	0.660008682324436
+Forced expiratory volume in 1-second (FEV1), predicted	20153_irnt	117172	0.684387873049781
+Arm fat percentage (left)	23123_irnt	353793.5	0.658861144145384
+Trunk fat percentage	23127_irnt	353965.5	0.615567164390573
+Leg fat percentage (left)	23115_irnt	354244.5	0.56780754431488
+Forced expiratory volume in 1-second (FEV1)	3063_irnt	328779	0.365565296538358
+Waist circumference	48_irnt	359923.5	0.577373952895292
+Pulse rate, automated reading	102_irnt	339298	0.185310276300516
+Albumin (quantile)	30600_irnt	315073	0.185840288820038
+Alanine aminotransferase (quantile)	30620_irnt	344092	0.160425036312972
+Calcium (quantile)	30680_irnt	314696.5	0.146703184752458
+Forced expiratory volume in 1-second (FEV1), Best measure	20150_irnt	272300	0.384368213601518
+Heel bone mineral density (BMD) (right)	4124_irnt	114421	0.367102400808762
+Heel quantitative ultrasound index (QUI), direct entry (right)	4123_irnt	114478	0.364088631633173
+Heel bone mineral density (BMD) T-score, automated (right)	4125_irnt	114478	0.364088631633173
+Systolic blood pressure, automated reading	4080_irnt	339645	0.402230264193989
+Urea (quantile)	30670_irnt	343643.5	0.101762938052153
+Heel broadband ultrasound attenuation (right)	4120_irnt	114326	0.358191337146627
+Diastolic blood pressure, automated reading	4079_irnt	340014.5	0.255456234924334
+Mean corpuscular haemoglobin concentration	30060_irnt	350357.5	0.0574015214643506
+Ankle spacing width (right)	4119_irnt	114308	0.437715927953151
+3mm weak meridian (left)	5096_irnt	75176.5	0.516432047961071
+3mm strong meridian (left)	5135_irnt	75260.6	0.645068255071197
+Age first had sexual intercourse	2139_irnt	316641	1.24007439322018
+Basophill percentage	30220_irnt	349907.5	0.0674362250602713
+6mm strong meridian (left)	5134_irnt	65398.2	0.57534129489829
+Hand grip strength (right)	47_irnt	359380.5	0.651891311729007
+6mm weak meridian (left)	5097_irnt	65434.2	0.566630236769903
+Corneal resistance factor (right)	5257_irnt	76525.3	0.338664285386801
+Peak expiratory flow (PEF)	3064_irnt	329112	0.181201069727603
+Spherical power (left)	5085_irnt	77722.4	0.347022017478023
+Birth weight	20022_irnt	204625	0.206526707021632
