@@ -13,11 +13,19 @@ code_list = df["code"].tolist()[:1]
 ns = df["N"].tolist()[:1]
 # note to self - deal with N (in phenotype file, currently ignored)
 
+# rule all:
+#     """will return the input files needed for ldsc"""
+#     input:
+#         expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",info=0,chrom="all",pheno_code=code_list),
+#         expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv",info=0,chrom="all",pheno_code=code_list)
+
 rule all:
-    """will return the input files needed for ldsc"""
+    """goes up until the end of the wgets"""
     input:
-        expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",info=0,chrom="all",pheno_code=code_list),
-        expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv",info=0,chrom="all",pheno_code=code_list)
+        "data/UKBB.ALL.ldscore.tar.gz",
+        "data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab.gz",
+        expand("data/GWAS_summaries/raw/{pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz",pheno_code=code_list),
+        
 
 
 rule download_sds:
