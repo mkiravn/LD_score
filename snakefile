@@ -13,18 +13,18 @@ code_list = df["code"].tolist()[:1]
 ns = df["N"].tolist()[:1]
 # note to self - deal with N (in phenotype file, currently ignored)
 
-# rule all:
-#     """will return the input files needed for ldsc"""
-#     input:
-#         expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",info=0,chrom="all",pheno_code=code_list),
-#         expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv",info=0,chrom="all",pheno_code=code_list)
+ rule all:
+     """will return the input files needed for ldsc"""
+     input:
+         expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",info=0,chrom=range(1,24,1),pheno_code=code_list),
+         expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv",info=0,chrom="all",pheno_code=code_list)
 
-rule all:
-    """goes up until the end of the wgets"""
-    input:
-        "data/UKBB.ALL.ldscore.tar.gz",
-        "data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab.gz",
-        expand("data/GWAS_summaries/raw/{pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz",pheno_code=code_list),
+# rule all:
+#     """goes up until the end of the wgets"""
+#     input:
+#         "data/UKBB.ALL.ldscore.tar.gz",
+#         "data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab.gz",
+#         expand("data/GWAS_summaries/raw/{pheno_code}.gwas.imputed_v3.both_sexes.tsv.bgz",pheno_code=code_list),
         
 
 
@@ -48,6 +48,8 @@ rule download_bscores:
     shell:
         "wget https://github.com/sellalab/HumanLinkedSelectionMaps/raw/master/Bmaps/CADD_bestfit.tar.gz -O data/bscores/CADD_bestfit.tar.gz"
 
+
+# these rules only get the phenotype table - ironically though these are needed in my current rule all. 
 rule download_phenotype_table:
     """downloads table of phenotypes from Simons et al. 2023, 
     https://www.biorxiv.org/content/10.1101/2022.10.04.509926v1.supplementary-material"""
@@ -149,7 +151,11 @@ rule filter_variants:
     output:
         "data/GWAS_summaries/analysis/variants.info{info}.chr{chrom}.tsv"
     shell:
-        "Rscript scripts/filter_variants.R {input} {output} {wildcards.info} {wildcards.chrom}"
+        r"""
+        awk -F '\t' 'BEGIN {{OFS="\\t"}} NR==1 {{print}} ($2 == {wildcards.chrom}) && ($7 > {wildcards.info}) {{print}}' \
+        data/GWAS_summaries/unzipped/variants.tsv > "data/GWAS_summaries/analysis/variants.info{wildcards.info}.chr{wildcards.chrom}.tsv"
+        """
+#        "Rscript scripts/filter_variants.R {input} {output} {wildcards.info} {wildcards.chrom}"
 
 
 rule combine_sumstats:
