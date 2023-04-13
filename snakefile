@@ -190,7 +190,9 @@ rule pool_sumstats:
         "data/GWAS_summaries/processed/{pheno_code}.info{info}.allchroms.sumstats.tsv"
     shell:
         """
-        cat {' '.join(input)} > {output}
+        find data/GWAS_summaries/unzipped/ -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.tSDS.tsv" -type f -print0 | \
+        xargs -0 awk 'FNR==1 && NR>1 {{next}} 1' | \
+        sort -n -k1,1 > {output}
         """
 
 rule pool_SDS:
@@ -201,7 +203,9 @@ rule pool_SDS:
         "data/sds/{pheno_code}.info{info}.allchroms.tSDS.tsv"
     shell:
         """
-        cat {' '.join(input)} > {output}
+        find data/sds -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.tSDS.tsv" -type f -print0 | \
+        xargs -0 awk 'FNR==1 && NR>1 {{next}} 1'| \
+        sort -n -k1,1 > {output}
         """
 
 # # works up to here...
