@@ -3,15 +3,13 @@
 codes=$(cut -f 2 data/simons_phenotypes.tsv | awk 'NR > 1')
 # define input files
 input_files=(
-    "50_raw.info0.chr1"
-    "3731.info0.chr1"
-    "100890.info0.chr1"
+    "50_raw.info0.allchroms"
 )
 
 modified_codes=""
 for code in $codes
 do
-    modified_code="$code.info0.chr1"
+    modified_code="$code.info0.allchroms"
     # Append modified code to variable
     modified_codes="$modified_codes $modified_code"
 done
@@ -20,7 +18,7 @@ done
 echo "Running analysis for phenotypes: $modified_codes"
 
 # define directories and files
-input_dir="data/GWAS_summaries/unzipped"
+input_dir="data/GWAS_summaries/processed"
 munged_dir="data/GWAS_summaries/sumstats"
 output_dir="data/results/rg"
 
