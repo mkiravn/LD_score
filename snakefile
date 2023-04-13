@@ -13,11 +13,11 @@ code_list = df["code"].tolist()[:1]
 ns = df["N"].tolist()[:1]
 # note to self - deal with N (in phenotype file, currently ignored)
 
- rule all:
-     """will return the input files needed for ldsc"""
-     input:
-         expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",info=0,chrom=range(1,24,1),pheno_code=code_list),
-         expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv",info=0,chrom="all",pheno_code=code_list)
+rule all:
+    """will return the input files needed for ldsc"""
+    input:
+        expand("data/GWAS_summaries/processed/{pheno_code}.info{info}.allchroms.sumstats.tsv",info=0,pheno_code=code_list),
+        expand("data/sds/{pheno_code}.info{info}.allchroms.tSDS.tsv",info=0,pheno_code=code_list)
 
 # rule all:
 #     """goes up until the end of the wgets"""
@@ -182,6 +182,27 @@ rule polarise_sds:
         Rscript scripts/polarise_SDS.R {input.sds} {input.sumstats} {output} 
         """ 
 
+rule pool_sumstats:
+    """pools summary statistics into one file"""
+    input:
+        expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv", pheno_code="{pheno_code}", info="{info}", chrom=range(1, 23))
+    output:
+        "data/GWAS_summaries/processed/{pheno_code}.info{info}.allchroms.sumstats.tsv"
+    shell:
+        """
+        cat {' '.join(input)} > {output}
+        """
+
+rule pool_SDS:
+    """pools summary SDS into one file"""
+    input:
+        expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv", pheno_code="{pheno_code}", info="{info}", chrom=range(1, 23))
+    output:
+        "data/sds/{pheno_code}.info{info}.allchroms.tSDS.tsv"
+    shell:
+        """
+        cat {' '.join(input)} > {output}
+        """
 
 # # works up to here...
 # rule munge_sumstats:
