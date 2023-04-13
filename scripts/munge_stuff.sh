@@ -15,4 +15,4 @@ a2="ref"
 --sumstats "${input_file}" \
 --N-col "n_complete_samples" \
 --a1 "${a1}" \
---a2 "${a2}"
+--a2 "${a2}" 

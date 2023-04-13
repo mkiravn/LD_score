@@ -192,7 +192,7 @@ rule pool_sumstats:
         """
         find data/GWAS_summaries/unzipped/ -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.sumstats.tsv" -type f -print0 | \
         xargs -0 awk -F'\\t' 'FNR==1 && NR>1 {{next}} 1' | \
-        sort -n -k4,4 > {output}
+        sort -n -k4,4 -k5,5 > {output}
         """
 
 rule pool_SDS:
@@ -205,7 +205,7 @@ rule pool_SDS:
         """
         find data/sds -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.tSDS.tsv" -type f -print0 | \
         xargs -0 awk 'FNR==1 && NR>1 {{next}} 1'| \
-        sort -n -k1,1 > {output}
+        sort -n -k1,1 -k2,2 > {output}
         """
 
 # # works up to here...

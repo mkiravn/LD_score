@@ -1,13 +1,13 @@
 options(warn = 0)
-
+library(tidyverse)
 # Read in codes
-phenotypes <- read.table("data/simons_phenotypes.tsv", header = TRUE, sep = "\t")
+phenotypes <- read.table("data/simons_phenotypes.tsv", header = TRUE, sep = "\t") %>% head(1)
 
 codes <- phenotypes$code
 
 # Define directories and files
-input_dir <- "data/GWAS_summaries/unzipped"
-munged_dir <- "data/GWAS_summaries/sumstats"
+input_dir <- "data/GWAS_summaries/processed"
+munged_dir <- "data/GWAS_summaries/munged"
 tSDS_dir <- "data/sds"
 output_dir <- "data/results/rg"
 ld_path <- "data/UKBB.ALL.ldscore/UKBB.EUR.rsid"
@@ -24,7 +24,7 @@ for (i in c(1:dim(phenotypes)[1])) {
     code <- phenotypes$code[i]
     #print(paste("Running for code:",code))
 
-    modified_code <- paste0(code, ".info0.chr1") # Modify codes
+    modified_code <- paste0(code, ".info0.allchroms") # Modify codes
     # Generate input file paths
     sumstats_file <- file.path(input_dir, paste0(modified_code, ".sumstats.tsv"))
     tSDS_file <- file.path(tSDS_dir,paste0(modified_code, ".tSDS.tsv"))
