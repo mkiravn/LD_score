@@ -16,4 +16,5 @@ M=$5
 --ref-ld "${ld_path}" \
 --w-ld "${ld_path}" \
 --M "${M}" \
+--merge-alleles NO_MATCH \
 --out "${output_path}"
