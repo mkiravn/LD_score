@@ -20,9 +20,9 @@ output_path <- args[3]
 
 # join and write out
 print(paste("Processing. Will output to:",output_path))
-left_join(variants,sumstats,by="variant") %>%
+left_join(variants,sumstats,by=c("chr","pos")) %>%
     mutate(a1=alt,a2=ref) %>%
-    select(ref,alt,rsid,chr,pos,beta,pval,n_complete_samples) %>%
+    select(ref,alt,rsid,varid,chr,pos,beta,pval,n_complete_samples) %>%
     fwrite(sep="\t", file=output_path)
 
 

@@ -149,11 +149,11 @@ rule filter_variants:
     input:
         "data/GWAS_summaries/unzipped/variants.tsv"
     output:
-        "data/GWAS_summaries/analysis/variants.info{info}.chr{chrom}.tsv"
+        "data/GWAS_summaries/variants/variants.info{info}.chr{chrom}.tsv"
     shell:
         r"""
         awk -F '\t' 'BEGIN {{OFS="\\t"}} NR==1 {{print}} ($2 == {wildcards.chrom}) && ($7 > {wildcards.info}) {{print}}' \
-        data/GWAS_summaries/unzipped/variants.tsv > "data/GWAS_summaries/analysis/variants.info{wildcards.info}.chr{wildcards.chrom}.tsv"
+        data/GWAS_summaries/unzipped/variants.tsv > "data/GWAS_summaries/variants/variants.info{wildcards.info}.chr{wildcards.chrom}.tsv"
         """
 #        "Rscript scripts/filter_variants.R {input} {output} {wildcards.info} {wildcards.chrom}"
 
@@ -163,7 +163,7 @@ rule combine_sumstats:
     Combine info from variant file with info from summary statistics file
     """
     input:
-        variants="data/GWAS_summaries/analysis/variants.info{info}.chr{chrom}.tsv",
+        variants="data/GWAS_summaries/variants/variants.info{info}.chr{chrom}.tsv",
         sumstats= "data/GWAS_summaries/unzipped/{pheno_code}.gwas.imputed_v3.both_sexes.tsv"
     output:
         combined="data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
@@ -176,10 +176,11 @@ rule polarise_sds:
         sds="data/sds/SDS_UK10K_n3195_release_Sep_19_2016.tab",
         sumstats="data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv",
     output:
-        polarised_sds="data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv"
+        polarised_sds="data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.tsv",
+        filtered_sumstats="data/GWAS_summaries/processed/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv"
     shell:
         """
-        Rscript scripts/polarise_SDS.R {input.sds} {input.sumstats} {output} 
+        Rscript scripts/polarise_SDS.R {input.sds} {input.sumstats} {output.polarised_sds} {output.filtered_sumstats}
         """ 
 
 rule pool_sumstats:
