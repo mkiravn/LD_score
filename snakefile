@@ -186,14 +186,15 @@ rule polarise_sds:
 rule pool_sumstats:
     """pools summary statistics into one file"""
     input:
-        expand("data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv", pheno_code="{pheno_code}", info="{info}", chrom=range(1, 23))
+        expand("data/GWAS_summaries/processed/{pheno_code}.info{info}.chr{chrom}.sumstats.tsv", pheno_code="{pheno_code}", info="{info}", chrom=range(1, 23))
     output:
         "data/GWAS_summaries/processed/{pheno_code}.info{info}.allchroms.sumstats.tsv"
     shell:
         """
-        find data/GWAS_summaries/unzipped/ -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.sumstats.tsv" -type f -print0 | \
-        xargs -0 awk -F'\\t' 'FNR==1 && NR>1 {{next}} 1' | \
-        sort -n -k4,4 -k5,5 > {output}
+        find data/GWAS_summaries/processed/ -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.sumstats.tsv" -type f -print0 | \
+        xargs -0 awk 'FNR==1 && NR>1 {{next}} 1'| \
+	(sed -u 1q; \
+        sort -V -k1,1 -k2,2) > {output}
         """
 
 rule pool_SDS:
@@ -206,7 +207,7 @@ rule pool_SDS:
         """
         find data/sds -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.tSDS.tsv" -type f -print0 | \
         xargs -0 awk 'FNR==1 && NR>1 {{next}} 1'| \
-        sort -n -k1,1 -k2,2 > {output}
+        sort -V -k1,1 -k2,2 > {output}
         """
 
 # # works up to here...

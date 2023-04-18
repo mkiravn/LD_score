@@ -21,6 +21,7 @@ echo "Running analysis for phenotypes: $modified_codes"
 input_dir="data/GWAS_summaries/processed"
 munged_dir="data/GWAS_summaries/munged"
 output_dir="data/results/rg"
+sds_dir="data/sds"
 
 # loop over input files and execute scripts
 for input_file in ${modified_codes}; do
@@ -28,10 +29,11 @@ for input_file in ${modified_codes}; do
     munged_file="${munged_dir}/munged.${input_file}"
     # generate output file path
     output_file="${output_dir}/${input_file}"
-    
+    sds_file="${sds_dir}/${input_file}.tSDS.tsv"
+
     # run the scripts
     mkdir -p ${output_dir}
     mkdir -p ${munged_dir}
     bash scripts/munge_stuff.sh "${input_dir}/${input_file}.sumstats.tsv" "${munged_file}" && \
-    bash scripts/estimate_rg.sh "${munged_file}.sumstats.gz" "${input_file}.tSDS.tsv" EUR "${output_file}"
+    bash scripts/estimate_rg.sh "${munged_file}.sumstats.gz" "${sds_file}" data/UKBB.ALL.ldscore/UKBB.EUR.rsid "${output_file}" 23960350
 done
