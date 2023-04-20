@@ -25,7 +25,7 @@ joined <- SDS %>%
   rename("chr"="CHR","pos"="POS","rsid"="ID") %>%
   inner_join(sumstats,by=c("chr","pos","rsid")) 
 
-print(paste("Signs to be flipped due to AA/ref differing:",length(joined$AA==joined$ref)))
+print(paste("Signs to be flipped due to AA/ref differing:",length(joined$AA)-length(joined$AA==joined$ref)))
 
 # output the number of SNPs now
 bf <- dim(joined)[1]

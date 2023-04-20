@@ -13,6 +13,7 @@ code <- args[4]
 
 print(paste("Reading in files:",variants,sumstats))
 
+phenotypes <- fread(phenotypes,header=TRUE)
 n <- phenotypes %>% filter(phenocode==code)
 
 variants <- fread(variants,header=TRUE) %>% rename("chr"="chrom") %>% mutate(chr=as.integer(chr))
