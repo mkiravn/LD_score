@@ -16,7 +16,8 @@ ns = df["N"].tolist()[:1]
 rule all:
     """will return the input files needed for ldsc"""
     input:
-        expand("data/GWAS_summaries/processed/{pheno_code}.info{info}.chr{chrom}.pan.sumstats.tsv",pheno_code=numeric_code_list,info=0,chrom=1)
+        expand("data/GWAS_summaries/raw/continuous-{pheno_code}-both_sexes-irnt.tsv.bgz",pheno_code=50),
+	expand("data/GWAS_summaries/processed/{pheno_code}.info{info}.chr{chrom}.pan.sumstats.tsv",pheno_code=numeric_code_list,info=0,chrom=1)
 
 rule download_sds:
     output:

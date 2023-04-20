@@ -30,8 +30,8 @@ print(paste("Signs to be flipped due to AA/ref differing:",length(joined$AA==joi
 joined <- joined %>%
   rowwise() %>%
   mutate(tSDS = case_when( 
-    AA==ref & DA==alt ~ sign(beta) * SDS,
-    AA==alt & DA==ref ~ - sign(beta) * SDS),
+    AA==ref & DA==alt ~ sign(beta_EUR) * SDS,
+    AA==alt & DA==ref ~ - sign(beta_EUR) * SDS),
     .default=NA) %>% 
   ungroup() %>%
   filter(!is.na(tSDS))%>%
@@ -42,5 +42,5 @@ joined %>%
   fwrite(sds_outfile, row.names = F, col.names = T, quote = F, sep = "\t")
 
 joined %>%
-  select(chr,pos,SNP=rsid,A2,A1,beta,pval,n_complete_samples) %>%
+  select(chr,pos,SNP=rsid,A2,A1,beta_EUR,neglog10_pval_EUR,n_cases_EUR) %>%
   fwrite(ukbb_outfile, row.names = F, col.names = T, quote = F, sep = "\t")
