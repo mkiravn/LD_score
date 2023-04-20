@@ -17,7 +17,7 @@ rule all:
     """will return the input files needed for ldsc"""
     input:
         expand("data/GWAS_summaries/raw/continuous-{pheno_code}-both_sexes-irnt.tsv.bgz",pheno_code=50),
-	expand("data/GWAS_summaries/processed/{pheno_code}.info{info}.chr{chrom}.pan.sumstats.tsv",pheno_code=numeric_code_list,info=0,chrom=1)
+	    expand("data/GWAS_summaries/processed/{pheno_code}.info{info}.chr{chrom}.pan.sumstats.tsv",pheno_code=numeric_code_list,info=0,chrom=1)
 
 rule download_sds:
     output:
@@ -56,6 +56,18 @@ rule process_phenotype_table:
        "data/simons_phenotypes.tsv" 
     shell:
         "Rscript scripts/get_phenotypes.R {input} {output}"
+
+rule download_phenotype_manifest:
+    """downloads table of phenotypes from pan ukbb analysis"""
+    output:
+        tmp=temporary("data/phenotype_manifest.tsv.bgz"),
+        man="data/phenotype_manifest.tsv"
+    shell:
+        """
+        wget https://pan-ukb-us-east-1.s3.amazonaws.com/sumstats_release/phenotype_manifest.tsv.bgz -O {output.tmp} &&
+        gunzip -c {output.tmp} > {output.man}
+        """
+
 
 #This rule unzips raw bgz files
 rule unzip_bgz:
@@ -155,11 +167,18 @@ rule combine_sumstats:
     """
     input:
         variants="data/GWAS_summaries/variants/variants.info{info}.chr{chrom}.pan.tsv",
-        sumstats=  "data/GWAS_summaries/unzipped/continuous-{pheno_code}-both_sexes-irnt.tsv"
+        sumstats=  "data/GWAS_summaries/unzipped/continuous-{pheno_code}-both_sexes-irnt.tsv",
+        phenotypes="data/phenotype_manifest.tsv"
     output:
         combined="data/GWAS_summaries/unzipped/{pheno_code}.info{info}.chr{chrom}.pan.sumstats.tsv"
     shell:
-        "Rscript scripts/combine_sumstats_pan.R {input.variants} {input.sumstats} {output.combined}"
+        """
+        Rscript scripts/combine_sumstats_pan.R {input.variants} \
+        {input.sumstats} \
+        {input.phenotypes} \
+        {wildcards.pheno_code} \
+        {output.combined}
+        """
 
 rule polarise_sds:
     """polarises and munges sds"""
