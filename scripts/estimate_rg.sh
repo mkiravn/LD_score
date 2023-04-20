@@ -16,4 +16,5 @@ M=$5
 --ref-ld "${ld_path}" \
 --w-ld "${ld_path}" \
 --M "${M}" \
---out "${output_path}"
+--out "${output_path}" \
+--return-silly-things

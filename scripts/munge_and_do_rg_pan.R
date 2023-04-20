@@ -1,7 +1,7 @@
 options(warn = 0)
 library(tidyverse)
 # Read in codes
-phenotypes <- read.table("data/simons_phenotypes.tsv", header = TRUE, sep = "\t") %>% head(1)
+phenotypes <- read.table("data/simons_phenotypes_codes.tsv", header = TRUE, sep = "\t") %>% head(1)
 
 codes <- phenotypes$ncode
 
@@ -21,7 +21,7 @@ dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # Loop over input files and execute scripts
 for (i in c(1:dim(phenotypes)[1])) {
-    code <- phenotypes$code[i]
+    code <- phenotypes$ncode[i]
     #print(paste("Running for code:",code))
 
     modified_code <- paste0(code, ".info0.chr1.pan") # Modify codes
@@ -48,7 +48,7 @@ for (i in c(1:dim(phenotypes)[1])) {
 
 
     # Run the scripts
-    system(paste0("bash scripts/munge_stuff.sh ", sumstats_file, " ", munged_file_prefix))
+    system(paste0("bash scripts/munge_stuff_pan.sh ", sumstats_file, " ", munged_file_prefix))
     system(paste("bash scripts/estimate_rg.sh", paste0(munged_file_prefix, ".sumstats.gz"), tSDS_file, ld_path, output_file, 23960350))
 }
 
