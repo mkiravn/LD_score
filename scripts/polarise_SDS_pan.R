@@ -27,6 +27,10 @@ joined <- SDS %>%
 
 print(paste("Signs to be flipped due to AA/ref differing:",length(joined$AA==joined$ref)))
 
+# output the number of SNPs now
+bf <- dim(joined)[1]
+print(paste("Before checking consensus on alleles, number of SNPs:",bf))
+
 joined <- joined %>%
   rowwise() %>%
   mutate(tSDS = case_when( 
@@ -35,7 +39,11 @@ joined <- joined %>%
     .default=NA) %>% 
   ungroup() %>%
   filter(!is.na(tSDS))%>%
-  mutate(N=3195.0) 
+  mutate(N=3195.0)
+  
+# and after filtering
+print(paste("After checking consensus on alleles, number of SNPs:",dim(joined)[1])) 
+print(paste("Number of sites dropped:",bf-dim(joined)[1])) 
 
 joined %>%
   select(chr,pos,SNP=rsid,A2,A1,Z=tSDS,N) %>%
