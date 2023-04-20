@@ -50,5 +50,5 @@ joined %>%
   fwrite(sds_outfile, row.names = F, col.names = T, quote = F, sep = "\t")
 
 joined %>%
-  select(chr,pos,SNP=rsid,A2,A1,beta_EUR,neglog10_pval_EUR,n_cases_EUR) %>%
+  select(chr,pos,SNP=rsid,A2,A1,beta_EUR,neglog10_pval_EUR,n_cases_EUR,pval) %>%
   fwrite(ukbb_outfile, row.names = F, col.names = T, quote = F, sep = "\t")
