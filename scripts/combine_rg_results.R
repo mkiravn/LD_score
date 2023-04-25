@@ -6,9 +6,9 @@ directory <- 'data/results/rg'
 # phenotypes <- read.table("data/simons_phenotypes.tsv", header = TRUE, sep = "\t")
 
 # Name pattern of the files
-filename_pattern <- 'tSDS.*.log'
+filename_pattern <- 'tSDS.*.info0.allchroms.pan.log'
 
-output_file <-'data/results/rg/combined_rg.tsv'
+output_file <-'data/results/rg/combined_rg_pan.tsv'
 
 # List all files in the directory
 files <- list.files(directory, pattern = filename_pattern, full.names = TRUE)
@@ -24,7 +24,9 @@ for (file in files) {
   
     # Extract the lines containing the data rows
     data_lines <- lines[65]
+    print(data_lines)
     results <- data.frame(do.call(rbind, strsplit(data_lines, '\\s+')))
+    print(results)
     results <- results[c(2:length(results))]
     # Append the results to the combined results data frame
     combined_results <- rbind(combined_results, results)
