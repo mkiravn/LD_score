@@ -44,7 +44,8 @@ rule all:
     """will return the input files needed for ldsc"""
     input:
         expand("data/GWAS_summaries/processed/{pheno_code}.info0.allchroms.pan.sumstats.tsv",pheno_code=numeric_codes),
-	expand("data/sds/{pheno_code}.info0.allchroms.pan.tSDS.tsv",pheno_code=numeric_codes)
+	    expand("data/sds/{pheno_code}.info0.allchroms.pan.tSDS.tsv",pheno_code=numeric_codes),
+        expand("data/bscores/snpwise/snpwise.CADD.chr{chr}.bmap.txt" ,chr=range(1,22)) 
 
 
 #rule all:
@@ -67,9 +68,9 @@ rule unzip_sds:
 
 rule download_bscores:
     output:
-        "data/bscores/CADD_bestfit.tar.gz"
+        "data/bscores/CADD_bestfit"
     shell:
-        "wget https://github.com/sellalab/HumanLinkedSelectionMaps/raw/master/Bmaps/CADD_bestfit.tar.gz -O data/bscores/CADD_bestfit.tar.gz"
+        "wget https://github.com/sellalab/HumanLinkedSelectionMaps/raw/master/Bmaps/CADD_bestfit.tar.gz -O data/bscores/CADD_bestfit.tar.gz && tar -xzf data/bscores/CADD_bestfit.tar.gz"
 
 rule convert_bscores:
     output:
