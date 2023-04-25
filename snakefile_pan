@@ -39,6 +39,14 @@ rule download_bscores:
     shell:
         "wget https://github.com/sellalab/HumanLinkedSelectionMaps/raw/master/Bmaps/CADD_bestfit.tar.gz -O data/bscores/CADD_bestfit.tar.gz"
 
+rule convert_bscores:
+    output:
+       "data/bscores/snpwise/snpwise.CADD.chr{chr}.bmap.txt" 
+    input:
+        bscores="data/bscores/CADD_bestfit/chr{chr}.bmap.txt",
+        ld_file="LD_score/data/UKBB.ALL.ldscore/UKBB.EUR.rsid.l2.ldscore.gz"
+    shell:
+        "Rscript scripts/convert_bscore_to_annot.R {input.bscores} {input.ld_file} {output}"
 
 # these rules only get the phenotype table - ironically though these are needed in my current rule all. 
 rule download_phenotype_table:
