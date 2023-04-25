@@ -9,15 +9,47 @@ import pandas as pd
 df = pd.read_csv("data/simons_phenotypes_codes.tsv", sep="\t")
 
 # Extract the values of the "code" column into a list
-code_list = df["code"].tolist()[:1]
-numeric_code_list = df["ncode"].tolist()[:1]
-ns = df["N"].tolist()[:1]
+code_list = df["code"].tolist()
+numeric_code_list = df["ncode"].tolist()[20:40]
+ns = df["N"].tolist()
+
+import os
+import re
+
+directory = 'data/GWAS_summaries/unzipped/'
+
+# Regular expression pattern to extract numeric code from filename
+pattern = r'continuous-(\d+)-'
+
+# List to store extracted numeric codes
+numeric_codes = []
+
+# Iterate through files in the directory
+for filename in os.listdir(directory):
+    # Check if the filename contains the word 'continuous'
+    if 'continuous' in filename:
+        # Extract numeric code from filename using regular expression
+        match = re.search(pattern, filename)
+        if match:
+            # Append extracted numeric code to list
+            numeric_codes.append(int(match.group(1)))
+
+# Print the list of extracted numeric codes
+print(numeric_codes)
+
+
+
 
 rule all:
     """will return the input files needed for ldsc"""
     input:
-        expand("data/GWAS_summaries/raw/continuous-{pheno_code}-both_sexes-irnt.tsv.bgz",pheno_code=50),
-	    expand("data/GWAS_summaries/processed/{pheno_code}.info{info}.chr{chrom}.pan.sumstats.tsv",pheno_code=numeric_code_list,info=0,chrom=1)
+        expand("data/GWAS_summaries/processed/{pheno_code}.info0.allchroms.pan.sumstats.tsv",pheno_code=numeric_codes),
+	expand("data/sds/{pheno_code}.info0.allchroms.pan.tSDS.tsv",pheno_code=numeric_codes)
+
+
+#rule all:
+#    input:
+#        expand("data/GWAS_summaries/raw/continuous-{pheno_code}-both_sexes-irnt.tsv.bgz",pheno_code=numeric_code_list)	
 
 rule download_sds:
     output:
@@ -78,18 +110,18 @@ rule unzip_bgz:
    shell:
        "gunzip -c {input} > {output}"
 
-rule download_pan_sumstats_files:
-    """
-    Download phenotype files
-    """
-    output:
-        "data/GWAS_summaries/raw/continuous-{pheno_code}-both_sexes-irnt.tsv.bgz"
-    shell:
-       """
-       mkdir -p data/GWAS_summaries/raw/ && \
-       wget https://pan-ukb-us-east-1.s3.amazonaws.com/sumstats_flat_files/continuous-{wildcards.pheno_code}-both_sexes-irnt.tsv.bgz \
-       -O {output} 
-       """
+#rule download_pan_sumstats_files:
+#    """
+#    Download phenotype files
+#    """
+#    output:
+#        "data/GWAS_summaries/raw/continuous-{pheno_code}-both_sexes-irnt.tsv.bgz"
+#    shell:
+#       """
+#       mkdir -p data/GWAS_summaries/raw/ && \
+#       wget https://pan-ukb-us-east-1.s3.amazonaws.com/sumstats_flat_files/continuous-{wildcards.pheno_code}-both_sexes-irnt.tsv.bgz \
+#       -O {output} 
+#       """
 
 rule download_pan_variants:
     """
@@ -210,12 +242,13 @@ rule pool_sumstats:
 rule pool_SDS:
     """pools summary SDS into one file"""
     input:
-        expand("data/sds/{pheno_code}.info{info}.chr{chrom}.tSDS.pan.tsv", pheno_code="{pheno_code}", info="{info}", chrom=range(1, 23))
+        expand("data/sds/{pheno_code}.info{info}.chr{chrom}.pan.tSDS.tsv", pheno_code="{pheno_code}", info="{info}", chrom=range(1, 23))
     output:
-        "data/sds/{pheno_code}.info{info}.allchroms.tSDS.pan.tsv"
+        "data/sds/{pheno_code}.info{info}.allchroms.pan.tSDS.tsv"
     shell:
         """
         find data/sds -name "{wildcards.pheno_code}.info{wildcards.info}.chr*.pan.tSDS.tsv" -type f -print0 | \
         xargs -0 awk 'FNR==1 && NR>1 {{next}} 1'| \
-        sort -V -k1,1 -k2,2 > {output}
+        (sed -u 1q; \
+	sort -V -k1,1 -k2,2) > {output}
         """

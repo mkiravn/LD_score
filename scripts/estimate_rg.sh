@@ -17,4 +17,6 @@ M=$5
 --w-ld "${ld_path}" \
 --M "${M}" \
 --out "${output_path}" \
---return-silly-things
+--return-silly-things \
+--print-cov
+
