@@ -1,7 +1,7 @@
 options(warn = 0)
 library(tidyverse)
 # Read in codes
-phenotypes <- read.table("data/simons_phenotypes_codes.tsv", header = TRUE, sep = "\t") %>% head(20)
+phenotypes <- read.table("data/simons_phenotypes_codes.tsv", header = TRUE, sep = "\t") %>% tail(80)
 
 codes <- phenotypes$ncode
 
@@ -48,7 +48,7 @@ for (i in c(1:dim(phenotypes)[1])) {
 
 
     # Run the scripts
-    system(paste0("bash scripts/munge_stuff_pan.sh ", sumstats_file, " ", munged_file_prefix))
+    #system(paste0("bash scripts/munge_stuff_pan.sh ", sumstats_file, " ", munged_file_prefix))
     system(paste("bash scripts/estimate_rg.sh", paste0(munged_file_prefix, ".sumstats.gz"), tSDS_file, ld_path, output_file, 7009236))
 }
 

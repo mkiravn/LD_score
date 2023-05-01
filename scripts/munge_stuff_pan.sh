@@ -16,5 +16,5 @@ a2="A2"
 --N-col "n_cases_EUR" \
 --a1 "${a1}" \
 --a2 "${a2}" \
---p "neglog10_pval_EUR" \
+--p "pval" \
 --signed-sumstats beta_EUR,0

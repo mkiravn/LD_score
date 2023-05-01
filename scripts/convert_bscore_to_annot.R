@@ -10,8 +10,8 @@ args <- commandArgs(trailingOnly = TRUE)
 dir.create(file.path("data/bscores/snpwise/"))
 input_file <- args[1]
 ld_file <- args[2]
-output_file <- args[3]
-
+output_path <- args[3]
+chr <- args[4]
 
 bmap <- fread(input_file)
 ldscore <- fread(ld_file)
@@ -19,7 +19,7 @@ ldscore <- fread(ld_file)
 colnames(bmap) <- c("B","length")
 
 bmap <- bmap %>%
-          mutate(bin_end=cumsum(length),bin_start=bin_end-length,B=B/1000,CHR=chr)
+          mutate(bin_end=cumsum(length),bin_start=bin_end-length,B=B/1000,CHR=as.numeric(chr))
 
 # Define function to match SNP BP to bin in bmap
 match_snp_to_bin <- function(snp_bp, bmap) {
@@ -33,9 +33,10 @@ match_snp_to_bin <- function(snp_bp, bmap) {
 
 ldscore <- ldscore %>% filter(CHR==chr) %>%
   rowwise() %>%
-  mutate(bin_end=match_snp_to_bin(BP,bmap=bmap))
+  mutate(bin_end=match_snp_to_bin(BP,bmap=bmap)) %>%
+  mutate(CHR=as.numeric(CHR))
 
 # Merge ldscore and bmap by bin
 merged <- ldscore %>% left_join(bmap,by=c("bin_end","CHR"))
 
-merged %>% select(CHR,SNP,BP,B) %>% write_tsv(file=output_file)
+merged %>% select(CHR,SNP,BP,B) %>% fwrite(sep="\t", file=output_path)

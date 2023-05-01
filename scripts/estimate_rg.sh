@@ -18,5 +18,5 @@ M=$5
 --M "${M}" \
 --out "${output_path}" \
 --return-silly-things \
---print-cov
+--print-coefficients
 
