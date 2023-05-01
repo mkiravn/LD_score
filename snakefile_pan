@@ -45,7 +45,7 @@ rule all:
     input:
        # expand("data/GWAS_summaries/processed/{pheno_code}.info0.allchroms.pan.sumstats.tsv",pheno_code=numeric_codes),
 	# expand("data/sds/{pheno_code}.info0.allchroms.pan.tSDS.tsv",pheno_code=numeric_codes),
-        expand("data/bscores/snpwise/snpwise.CADD.chr{chr}.bmap.txt" ,chr=range(1,22)) 
+        expand("data/bscores/snpwise_bim/snpwise.CADD.chr{chr}.bmap.txt" ,chr=range(1,22)) 
 
 
 #rule all:
@@ -80,6 +80,15 @@ rule convert_bscores:
         ld_file="data/UKBB.ALL.ldscore/UKBB.EUR.rsid.l2.ldscore.gz"
     shell:
         "Rscript scripts/convert_bscore_to_annot.R {input.bscores} {input.ld_file} {output} {wildcards.chr}"
+
+rule convert_bscores:
+    output:
+       "data/bscores/snpwise_bim/snpwise.CADD.chr{chr}.bmap.txt" 
+    input:
+        bscores="data/bscores/CADD_bestfit/chr{chr}.bmap.txt",
+        bim_file="data/1000G_EUR_Phase3_plink/1000G.EUR.QC.{chr}.bim"
+    shell:
+        "Rscript scripts/match_bscore_to_bim.R {input.bscores} {input.ld_file} {output} {wildcards.chr}"
 
 # these rules only get the phenotype table - ironically though these are needed in my current rule all. 
 rule download_phenotype_table:
