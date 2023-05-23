@@ -28,7 +28,7 @@ print(paste("Processing. Will output to:",output_path))
 left_join(variants,sumstats,by=c("chr","pos","ref","alt")) %>% # different with the other dataset
     mutate(A1=alt,A2=ref,n_cases_EUR=n$n_cases_EUR) %>%
     mutate(pval=10^(-neglog10_pval_EUR)) %>%
-    select(chr,pos,ref,alt,A1,A2,rsid,varid,beta_EUR,neglog10_pval_EUR,n_cases_EUR,pval) %>%
+    select(chr,pos,ref,alt,A1,A2,rsid,varid,beta_EUR,neglog10_pval_EUR,n_cases_EUR,pval,af_EUR) %>%
     fwrite(sep="\t", file=output_path)
 
 
